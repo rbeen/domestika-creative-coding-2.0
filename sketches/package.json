@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "hello.js",
   "scripts": {
+    "start": "canvas-sketch-cli hello.js --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,5 +12,8 @@
   "description": "",
   "dependencies": {
     "canvas-sketch": "^0.7.7"
+  },
+  "devDependencies": {
+    "canvas-sketch-cli": "^1.15.0"
   }
 }
