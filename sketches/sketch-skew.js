@@ -7,20 +7,14 @@ const settings = {
 
 const sketch = () => {
   // parameters for drawing our rectangle
-  let x, y, w, h;
-  let angle, rx, ry;
+  let x, y;
 
   return ({ context, width, height }) => {
     context.fillStyle = "white";
     context.fillRect(0, 0, width, height);
 
-    radius = 200;
-    angle = math.degToRad(-30);
-
     x = width * 0.5;
     y = height * 0.5;
-    w = width * 0.5;
-    h = height * 0.1;
 
     // save context before manipulation
     context.save();
@@ -30,6 +24,8 @@ const sketch = () => {
 
     drawSkewedRect({
       context,
+      x,
+      y,
     });
 
     // go back to our previous context
