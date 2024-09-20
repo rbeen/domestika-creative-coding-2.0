@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "hello.js",
   "scripts": {
+    "new": "canvas-sketch-cli --new --open",
     "start": "canvas-sketch-cli --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
