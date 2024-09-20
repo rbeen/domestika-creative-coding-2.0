@@ -12,8 +12,10 @@ let points;
 const sketch = ({ canvas }) => {
   points = [
     new Point({ x: 200, y: 540 }),
-    new Point({ x: 700, y: 700, control: true }),
+    new Point({ x: 700, y: 400 }),
     new Point({ x: 880, y: 540 }),
+    new Point({ x: 600, y: 700 }),
+    new Point({ x: 640, y: 900 }),
   ];
 
   canvasElement = canvas;
@@ -25,12 +27,45 @@ const sketch = ({ canvas }) => {
 
     context.beginPath();
     context.moveTo(points[0].x, points[0].y);
-    context.quadraticCurveTo(
-      points[1].x,
-      points[1].y,
-      points[2].x,
-      points[2].y
-    );
+
+    context.strokeStyle = "#999";
+    for (let i = 1; i < points.length; i++) {
+      context.lineTo(points[i].x, points[i].y);
+    }
+    context.stroke();
+
+    // for (let i = 1; i < points.length; i += 2) {
+    //   context.quadraticCurveTo(
+    //     points[i].x,
+    //     points[i].y,
+    //     points[i + 1].x,
+    //     points[i + 1].y
+    //   );
+    // }
+    // context.stroke();
+
+    context.beginPath();
+    for (let i = 0; i < points.length - 1; i++) {
+      const current = points[i];
+      const next = points[i + 1];
+      const mx = current.x + (next.x - current.x) / 2;
+      const my = current.y + (next.y - current.y) / 2;
+
+      // context.beginPath();
+      // context.arc(mx, my, 5, 0, Math.PI * 2);
+      // context.fillStyle = "green";
+      // context.fill();
+
+      if (i === 0) {
+        context.moveTo(current.x, current.y);
+      } else if (i === points.length - 2) {
+        context.quadraticCurveTo(current.x, current.y, next.x, next.y);
+      } else {
+        context.quadraticCurveTo(current.x, current.y, mx, my);
+      }
+    }
+    context.lineWidth = 5;
+    context.strokeStyle = "green";
     context.stroke();
 
     points.forEach((point) => {
@@ -45,9 +80,16 @@ const onMouseDown = (event) => {
   const x = (event.offsetX / canvasElement.offsetWidth) * canvasElement.width;
   const y = (event.offsetY / canvasElement.offsetHeight) * canvasElement.height;
 
+  let hit = false;
+
   points.forEach((point) => {
     point.isDragging = point.hitTest({ x, y });
+    hit = hit || point.isDragging;
   });
+
+  if (!hit) {
+    points.push(new Point({ x, y }));
+  }
 };
 
 const onMouseMove = (event) => {
