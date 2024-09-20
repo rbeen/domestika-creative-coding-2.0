@@ -25,7 +25,7 @@ const sketch = ({ width, height }) => {
   const bgColor = random.pick(risoColors).hex;
 
   const mask = {
-    radius: width * 0.4,
+    radius: width * 0.5,
     sides: 3,
     x: width * 0.5,
     y: height * 0.58,
@@ -96,9 +96,22 @@ const sketch = ({ width, height }) => {
 
     context.save();
     context.translate(mask.x, mask.y);
-    drawPolygon({ context, radius: mask.radius, sides: mask.sides });
-    context.lineWidth = 10;
-    context.strokeStyle = "black";
+
+    context.globalCompositeOperation = "color-burn";
+    context.lineWidth = 30;
+
+    drawPolygon({
+      context,
+      radius: mask.radius - context.lineWidth,
+      sides: mask.sides,
+    });
+
+    context.strokeStyle = Color.offsetHSL(
+      rectangleColors[0].hex,
+      0,
+      0,
+      -20
+    ).hex;
     context.stroke();
     context.restore();
   };
