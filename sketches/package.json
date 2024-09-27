@@ -4,7 +4,7 @@
   "main": "hello.js",
   "scripts": {
     "new": "canvas-sketch-cli --new --open",
-    "stream": "canvas-sketch-cli sketch-curves.js --output=tmp --stream",
+    "stream": "canvas-sketch-cli sketch-curves.js --output=output/curves --stream",
     "start": "canvas-sketch-cli --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
