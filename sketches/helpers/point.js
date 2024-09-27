@@ -1,14 +1,15 @@
 export default class Point {
-  constructor({ x, y, control = false }) {
+  constructor({ x, y, control = false, color = "blue" }) {
     this.x = x;
     this.y = y;
     this.control = control;
+    this.color = color;
   }
 
   draw(context) {
     context.save();
     context.translate(this.x, this.y);
-    context.fillStyle = this.control ? "red" : "blue";
+    context.fillStyle = this.control ? "red" : this.color;
     context.beginPath();
     context.arc(0, 0, 10, 0, Math.PI * 2);
     context.fill();
