@@ -1,9 +1,10 @@
 export default class Point {
-  constructor({ x, y, control = false, color = "blue" }) {
+  constructor({ x, y, control = false, color = "blue", lineWidth = 4 }) {
     this.x = x;
     this.y = y;
     this.control = control;
     this.color = color;
+    this.lineWidth = lineWidth;
   }
 
   draw(context) {
