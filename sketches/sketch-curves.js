@@ -7,6 +7,7 @@ const canvasSketch = require("canvas-sketch");
 
 const settings = {
   dimensions: [2048, 2048],
+  animate: true,
 };
 
 const sketch = ({ width, height }) => {
@@ -30,7 +31,7 @@ const sketch = ({ width, height }) => {
   let amplitude = 90;
 
   let colors = colormap({
-    colormap: "salinity",
+    colormap: "hot",
     nshades: amplitude,
     format: "hex",
     alpha: 1,
@@ -53,7 +54,7 @@ const sketch = ({ width, height }) => {
     points.push(new Point({ x, y, color, lineWidth }));
   }
 
-  return ({ context, width, height }) => {
+  return ({ context, width, height, frame }) => {
     context.fillStyle = "black";
     context.fillRect(0, 0, width, height);
     context.save();
@@ -64,6 +65,7 @@ const sketch = ({ width, height }) => {
 
     let lastX, lastY;
 
+    points.forEach((point) => point.randomize({ frame, frequency, amplitude }));
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < columns - 1; c++) {
         const current = points[r * columns + c];
