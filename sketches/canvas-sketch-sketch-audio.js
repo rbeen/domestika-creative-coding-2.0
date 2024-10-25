@@ -1,4 +1,7 @@
 const canvasSketch = require("canvas-sketch");
+const math = require("canvas-sketch-util/math");
+const random = require("canvas-sketch-util/random");
+const risoColors = require("riso-colors");
 
 const settings = {
   dimensions: [1048, 1048],
@@ -10,6 +13,13 @@ let audioContext, audioData, sourceNode, analyserNode;
 let manager;
 
 const sketch = () => {
+  const bins = [1, 2, 11, 50];
+  const binColors = [
+    random.pick(risoColors),
+    random.pick(risoColors),
+    random.pick(risoColors),
+    random.pick(risoColors),
+  ];
   return ({ context, width, height }) => {
     context.fillStyle = "white";
     context.fillRect(0, 0, width, height);
@@ -17,15 +27,27 @@ const sketch = () => {
     if (!audio || audio.paused) return;
 
     analyserNode.getFloatFrequencyData(audioData);
-    const avg = getAverage(audioData);
 
-    context.save();
-    context.translate(width / 2, height / 2);
-    context.lineWidth = 10;
-    context.beginPath();
-    context.arc(0, 0, Math.abs(avg), 0, Math.PI * 2);
-    context.stroke();
-    context.restore();
+    for (let i = 0; i < bins.length; i++) {
+      const mapped = math.mapRange(
+        audioData[bins[i]],
+        analyserNode.minDecibels,
+        analyserNode.maxDecibels,
+        0,
+        1,
+        true
+      );
+      const radius = mapped * 200;
+
+      context.save();
+      context.translate(width / 2, height / 2);
+      context.strokeStyle = binColors[i].hex;
+      context.lineWidth = 10;
+      context.beginPath();
+      context.arc(0, 0, radius, 0, Math.PI * 2);
+      context.stroke();
+      context.restore();
+    }
   };
 };
 
@@ -45,7 +67,7 @@ const addListeners = () => {
 
 const createAudio = () => {
   audio = document.createElement("audio");
-  audio.src = "audio/Orb-101.mp3";
+  audio.src = "audio/Orb-101-v2.mp3";
 
   audioContext = new AudioContext();
 
