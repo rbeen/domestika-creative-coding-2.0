@@ -30,7 +30,6 @@ const sketch = () => {
     bin = random.rangeFloor(4, 64);
     if (random.value() > 0.6) bin = 0;
     bins.push(bin);
-    //binColors.push("#000");
     binColors.push(random.pick(risoColors));
   }
 
@@ -83,27 +82,6 @@ const sketch = () => {
       context.restore();
     }
     context.restore();
-
-    //   for (let i = 0; i < bins.length; i++) {
-    //     const mapped = math.mapRange(
-    //       audioData[bins[i]],
-    //       analyserNode.minDecibels,
-    //       analyserNode.maxDecibels,
-    //       0,
-    //       1,
-    //       true
-    //     );
-    //     const radius = mapped * 200;
-
-    //     context.save();
-    //     context.translate(width / 2, height / 2);
-    //     context.strokeStyle = binColors[i].hex;
-    //     context.lineWidth = 10;
-    //     context.beginPath();
-    //     context.arc(0, 0, radius, 0, Math.PI * 2);
-    //     context.stroke();
-    //     context.restore();
-    //   }
   };
 };
 
