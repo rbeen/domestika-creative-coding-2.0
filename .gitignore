@@ -132,3 +132,5 @@ dist
 # exported files
 sketches/tmp/
 sketches/output/
+# MacOS stuffs
+.DS_Store
