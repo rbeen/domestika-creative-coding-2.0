@@ -2,6 +2,7 @@ const canvasSketch = require("canvas-sketch");
 const math = require("canvas-sketch-util/math");
 const random = require("canvas-sketch-util/random");
 const risoColors = require("riso-colors");
+const eases = require("eases");
 
 const settings = {
   dimensions: [1048, 1048],
@@ -11,43 +12,98 @@ const settings = {
 let audio;
 let audioContext, audioData, sourceNode, analyserNode;
 let manager;
+let minDecibels, maxDecibels;
 
 const sketch = () => {
-  const bins = [1, 2, 11, 50];
-  const binColors = [
-    random.pick(risoColors),
-    random.pick(risoColors),
-    random.pick(risoColors),
-    random.pick(risoColors),
-  ];
+  const numCircles = 5;
+  const numSlices = 9;
+  const slice = (Math.PI * 2) / numSlices;
+  const radius = 200;
+
+  const bins = [];
+  const binColors = [];
+
+  const lineWidths = [];
+  let lineWidth, bin, mapped;
+
+  for (let i = 0; i < numCircles * numSlices; i++) {
+    bin = random.rangeFloor(4, 64);
+    if (random.value() > 0.6) bin = 0;
+    bins.push(bin);
+    //binColors.push("#000");
+    binColors.push(random.pick(risoColors));
+  }
+
+  for (let i = 0; i < numCircles; i++) {
+    const t = i / (numCircles - 1);
+    lineWidth = eases.quadIn(t) * 200 + 20;
+    lineWidths.push(lineWidth);
+  }
+
   return ({ context, width, height }) => {
-    context.fillStyle = "white";
+    context.fillStyle = "#EEEAE0";
     context.fillRect(0, 0, width, height);
 
     if (!audio || audio.paused) return;
 
     analyserNode.getFloatFrequencyData(audioData);
 
-    for (let i = 0; i < bins.length; i++) {
-      const mapped = math.mapRange(
-        audioData[bins[i]],
-        analyserNode.minDecibels,
-        analyserNode.maxDecibels,
-        0,
-        1,
-        true
-      );
-      const radius = mapped * 200;
+    context.save();
+    context.translate(width / 2, height / 2);
+    let cradius = radius;
 
+    for (let i = 0; i < numCircles; i++) {
       context.save();
-      context.translate(width / 2, height / 2);
-      context.strokeStyle = binColors[i].hex;
-      context.lineWidth = 10;
-      context.beginPath();
-      context.arc(0, 0, radius, 0, Math.PI * 2);
-      context.stroke();
+      for (let j = 0; j < numSlices; j++) {
+        context.rotate(slice);
+
+        bin = bins[i * numSlices + j];
+        if (!bin) continue;
+
+        const mapped = math.mapRange(
+          audioData[bin],
+          minDecibels,
+          maxDecibels,
+          0,
+          1,
+          true
+        );
+
+        lineWidth = lineWidths[i] * mapped;
+        if (lineWidth < 1) continue;
+
+        context.lineWidth = lineWidth;
+
+        context.beginPath();
+        context.strokeStyle = binColors[i * numSlices + j].hex;
+        context.arc(0, 0, cradius + context.lineWidth * 0.5, 0, slice);
+        context.stroke();
+      }
+      cradius += lineWidths[i];
       context.restore();
     }
+    context.restore();
+
+    //   for (let i = 0; i < bins.length; i++) {
+    //     const mapped = math.mapRange(
+    //       audioData[bins[i]],
+    //       analyserNode.minDecibels,
+    //       analyserNode.maxDecibels,
+    //       0,
+    //       1,
+    //       true
+    //     );
+    //     const radius = mapped * 200;
+
+    //     context.save();
+    //     context.translate(width / 2, height / 2);
+    //     context.strokeStyle = binColors[i].hex;
+    //     context.lineWidth = 10;
+    //     context.beginPath();
+    //     context.arc(0, 0, radius, 0, Math.PI * 2);
+    //     context.stroke();
+    //     context.restore();
+    //   }
   };
 };
 
@@ -76,6 +132,8 @@ const createAudio = () => {
   analyserNode = audioContext.createAnalyser();
   sourceNode.connect(analyserNode);
 
+  minDecibels = analyserNode.minDecibels;
+  maxDecibels = analyserNode.maxDecibels;
   audioData = new Float32Array(analyserNode.frequencyBinCount);
 };
 
